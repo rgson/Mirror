@@ -84,6 +84,6 @@ git tag "upm/$latest" upm
 
 if [ "$1" = 'push' ]; then
 	git push origin master:master
-	git push -f origin upm:upm
+	git push origin upm:upm
 	git push origin upm/$latest
 fi
