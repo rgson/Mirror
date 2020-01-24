@@ -51,6 +51,15 @@ cat >> Mirror/package.json <<JSON
 	]
 }
 JSON
+cat > Mirror/package.json.meta <<META
+fileFormatVersion: 2
+guid: 63564e7531f695e388812dd877312d1a
+TextScriptImporter:
+  externalObjects: {}
+  userData:
+  assetBundleName:
+  assetBundleVariant:
+META
 
 # Commit the new version
 git add Mirror
