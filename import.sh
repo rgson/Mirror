@@ -18,6 +18,7 @@ fi
 rm -rf Mirror
 mkdir Mirror
 git archive "$latest" Assets/Mirror | tar --strip-components=2 -C Mirror -x
+git archive "$latest" LICENSE | tar -C Mirror -x
 
 # Generate package.json
 cat > Mirror/package.json <<JSON
@@ -51,10 +52,21 @@ cat >> Mirror/package.json <<JSON
 	]
 }
 JSON
+
+# Generate Unity .meta files
 cat > Mirror/package.json.meta <<META
 fileFormatVersion: 2
 guid: 63564e7531f695e388812dd877312d1a
 TextScriptImporter:
+  externalObjects: {}
+  userData:
+  assetBundleName:
+  assetBundleVariant:
+META
+cat > Mirror/LICENSE.meta <<META
+fileFormatVersion: 2
+guid: 0ce294661c27df278a7d54386ca6150a
+DefaultImporter:
   externalObjects: {}
   userData:
   assetBundleName:
