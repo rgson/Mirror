@@ -17,7 +17,7 @@ Inspired by this [issue][vis2k/Mirror#891] and [pull request][vis2k/Mirror#892].
 To install the package, add the following line to your `Packages/manifest.json`
 file, under `dependencies`:
 ```json
-"com.vis2k.mirror": "https://github.com/rgson/Mirror-UPM.git#upm",
+"se.rgson.vis2k-mirror": "https://github.com/rgson/Mirror-UPM.git#upm",
 ```
 
 Alternatively, install and use the [UpmGitExtension] to add it from Unity's

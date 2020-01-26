@@ -25,7 +25,7 @@ git archive "$version" LICENSE | tar -x
 # Generate package.json
 cat > package.json <<JSON
 {
-	"name": "com.vis2k.mirror",
+	"name": "se.rgson.vis2k-mirror",
 	"displayName": "Mirror",
 	"version": "${version#v}",
 	"unity": "2019.1",
