@@ -54,24 +54,22 @@ cat >> Mirror/package.json <<JSON
 JSON
 
 # Generate Unity .meta files
-cat > Mirror/package.json.meta <<META
+guid_namespace='446a8562-bed1-443d-bb0d-d1193f90358b'
+for f in \
+	LICENSE \
+	package.json \
+;do
+	guid=$(uuidgen --sha1 --namespace "$guid_namespace" --name "$f" | tr -d -)
+	cat > "Mirror/${f}.meta" <<META
 fileFormatVersion: 2
-guid: 63564e7531f695e388812dd877312d1a
+guid: $guid
 TextScriptImporter:
   externalObjects: {}
   userData:
   assetBundleName:
   assetBundleVariant:
 META
-cat > Mirror/LICENSE.meta <<META
-fileFormatVersion: 2
-guid: 0ce294661c27df278a7d54386ca6150a
-DefaultImporter:
-  externalObjects: {}
-  userData:
-  assetBundleName:
-  assetBundleVariant:
-META
+done
 
 # Commit the new version
 git add Mirror
