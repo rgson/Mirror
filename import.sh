@@ -75,9 +75,3 @@ git branch -D upm >/dev/null 2>&1 || true
 git subtree split -P Mirror -b upm
 
 git tag "upm/$latest" upm || true
-
-if [ "$1" = 'push' ]; then
-	git push origin master:master
-	git push origin upm:upm
-	git push origin upm/$latest
-fi
