@@ -9,10 +9,6 @@ git fetch upstream
 
 # Find the latest version
 latest=$(git tag --list 'v*' | sort -Vr | head -n1)
-if git rev-parse "upm/$latest" >/dev/null 2>&1; then
-	echo "Already on newest version ($latest)"
-	exit 0
-fi
 
 # Import the new version
 rm -rf Mirror
@@ -78,7 +74,7 @@ git commit -m "Version $latest"
 git branch -D upm >/dev/null 2>&1 || true
 git subtree split -P Mirror -b upm
 
-git tag "upm/$latest" upm
+git tag "upm/$latest" upm || true
 
 if [ "$1" = 'push' ]; then
 	git push origin master:master
