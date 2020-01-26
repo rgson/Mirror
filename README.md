@@ -2,12 +2,11 @@
 
 The Unity Package Manager is in many ways a more convenient alternative to the
 Unity Asset Store for dependency management. Unfortunately, the maintainer of
-[vis2k/Mirror] has [decided against UPM support][vis2k-reason] to drive more
-traffic to the Asset Store.
+[vis2k/Mirror] has [decided against UPM support][vis2k-reason].
 
 This repository adds UPM support to the upstream version of Mirror. It is not a
-fork of Mirror, but rather an otherwise unmodified repackaging of the upstream
-to support installation through the Unity Package Manager.
+fork, but rather an otherwise unmodified repackaging of the upstream to support
+installation through the Unity Package Manager.
 
 Inspired by this [issue][vis2k/Mirror#891] and [pull request][vis2k/Mirror#892].
 
