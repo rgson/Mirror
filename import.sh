@@ -8,22 +8,25 @@ git remote add upstream "$upstream_repo" >/dev/null 2>&1 || true
 git fetch upstream
 
 # Find the latest version
-latest=$(git tag --list 'v*' | sort -Vr | head -n1)
+version="$1"
+if [ -z "$1" ]; then
+	version=$(git tag --list 'v*' | sort -Vr | head -n1)
+fi
 
 # Checkout the packaging branch
 git checkout upm || git checkout --orphan upm
 
 # Import the new version
 rm -rf *
-git archive "$latest" Assets/Mirror | tar --strip-components=2 -x
-git archive "$latest" LICENSE | tar -x
+git archive "$version" Assets/Mirror | tar --strip-components=2 -x
+git archive "$version" LICENSE | tar -x
 
 # Generate package.json
 cat > package.json <<JSON
 {
 	"name": "com.vis2k.mirror",
 	"displayName": "Mirror",
-	"version": "${latest#v}",
+	"version": "${version#v}",
 	"unity": "2019.1",
 	"description": "Mirror is a high level Networking API for Unity, supporting different low level Transports.",
 	"author": "vis2k",
@@ -71,8 +74,8 @@ done
 
 # Commit the new version
 git add .
-git commit -m "Version $latest"
+git commit -m "Version $version"
 
-git tag "upm/$latest" || true
+git tag "upm/$version" || true
 
 git checkout master
