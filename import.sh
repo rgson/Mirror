@@ -10,14 +10,16 @@ git fetch upstream
 # Find the latest version
 latest=$(git tag --list 'v*' | sort -Vr | head -n1)
 
+# Checkout the packaging branch
+git checkout upm || git checkout --orphan upm
+
 # Import the new version
-rm -rf Mirror
-mkdir Mirror
-git archive "$latest" Assets/Mirror | tar --strip-components=2 -C Mirror -x
-git archive "$latest" LICENSE | tar -C Mirror -x
+rm -rf *
+git archive "$latest" Assets/Mirror | tar --strip-components=2 -x
+git archive "$latest" LICENSE | tar -x
 
 # Generate package.json
-cat > Mirror/package.json <<JSON
+cat > package.json <<JSON
 {
 	"name": "com.vis2k.mirror",
 	"displayName": "Mirror",
@@ -32,11 +34,11 @@ cat > Mirror/package.json <<JSON
 	"samples":[
 JSON
 first=yes
-for example_d in Mirror/Examples/*/; do
-	if [ $first = 'no' ]; then echo '		,' >> Mirror/package.json; fi
+for example_d in Examples/*/; do
+	if [ $first = 'no' ]; then echo '		,' >> package.json; fi
 	first=no
 	example=$(basename "$example_d")
-	cat >> Mirror/package.json <<JSON
+	cat >> package.json <<JSON
 		{
 			"displayName": "$example",
 			"description": "$example",
@@ -44,7 +46,7 @@ for example_d in Mirror/Examples/*/; do
 		}
 JSON
 done
-cat >> Mirror/package.json <<JSON
+cat >> package.json <<JSON
 	]
 }
 JSON
@@ -56,7 +58,7 @@ for f in \
 	package.json \
 ;do
 	guid=$(uuidgen --sha1 --namespace "$guid_namespace" --name "$f" | tr -d -)
-	cat > "Mirror/${f}.meta" <<META
+	cat > "$f.meta" <<META
 fileFormatVersion: 2
 guid: $guid
 TextScriptImporter:
@@ -68,10 +70,9 @@ META
 done
 
 # Commit the new version
-git add Mirror
+git add .
 git commit -m "Version $latest"
 
-git branch -D upm >/dev/null 2>&1 || true
-git subtree split -P Mirror -b upm
+git tag "upm/$latest" || true
 
-git tag "upm/$latest" upm || true
+git checkout master
