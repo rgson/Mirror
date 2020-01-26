@@ -19,6 +19,11 @@ file, under `dependencies`:
 "se.rgson.vis2k-mirror": "https://github.com/rgson/Mirror-UPM.git#upm",
 ```
 
+If you wish to explicitly depend on a specific version, use e.g.
+```json
+"se.rgson.vis2k-mirror": "https://github.com/rgson/Mirror-UPM.git#upm/v7.4.0",
+```
+
 Alternatively, install and use the [UpmGitExtension] to add it from Unity's
 Package Manager GUI.
 
