@@ -17,7 +17,7 @@ namespace Mirror
     /// </remarks>
     public abstract class NetworkConnection : IDisposable
     {
-        readonly HashSet<NetworkIdentity> visList = new HashSet<NetworkIdentity>();
+        public readonly HashSet<NetworkIdentity> visList = new HashSet<NetworkIdentity>();
 
         Dictionary<int, NetworkMessageDelegate> messageHandlers;
 
@@ -62,22 +62,6 @@ namespace Mirror
         public float lastMessageTime;
 
         /// <summary>
-        /// Obsolete: use <see cref="identity"/> instead
-        /// </summary>
-        [Obsolete("Use NetworkConnection.identity instead")]
-        public NetworkIdentity playerController
-        {
-            get
-            {
-                return identity;
-            }
-            internal set
-            {
-                identity = value;
-            }
-        }
-
-        /// <summary>
         /// The NetworkIdentity for this connection.
         /// </summary>
         public NetworkIdentity identity { get; internal set; }
@@ -87,9 +71,7 @@ namespace Mirror
         /// <para>This includes the player object for the connection - if it has localPlayerAutority set, and any objects spawned with local authority or set with AssignLocalAuthority.</para>
         /// <para>This list can be used to validate messages from clients, to ensure that clients are only trying to control objects that they own.</para>
         /// </summary>
-        // IMPORTANT: this needs to be <NetworkIdentity>, not <uint netId>. fixes a bug where DestroyOwnedObjects wouldn't find
-        //            the netId anymore: https://github.com/vis2k/Mirror/issues/1380 . Works fine with NetworkIdentity pointers though.
-        public readonly HashSet<NetworkIdentity> clientOwnedObjects = new HashSet<NetworkIdentity>();
+        public readonly HashSet<uint> clientOwnedObjects = new HashSet<uint>();
 
         /// <summary>
         /// Setting this to true will log the contents of network message to the console.
@@ -100,16 +82,6 @@ namespace Mirror
         /// <para>Note that these are application-level network messages, not protocol-level packets. There will typically be multiple network messages combined in a single protocol packet.</para>
         /// </remarks>
         public bool logNetworkMessages;
-
-        // this is always true for regular connections, false for local
-        // connections because it's set in the constructor and never reset.
-        [EditorBrowsable(EditorBrowsableState.Never), Obsolete("isConnected will be removed because it's pointless. A NetworkConnection is always connected.")]
-        public bool isConnected { get; protected set; }
-
-        // this is always 0 for regular connections, -1 for local
-        // connections because it's set in the constructor and never reset.
-        [EditorBrowsable(EditorBrowsableState.Never), Obsolete("hostId will be removed because it's not needed ever since we removed LLAPI as default. It's always 0 for regular connections and -1 for local connections. Use connection.GetType() == typeof(NetworkConnection) to check if it's a regular or local connection.")]
-        public int hostId = -1;
 
         /// <summary>
         /// Creates a new NetworkConnection with the specified address
@@ -125,10 +97,6 @@ namespace Mirror
         internal NetworkConnection(int networkConnectionId)
         {
             connectionId = networkConnectionId;
-#pragma warning disable 618
-            isConnected = true;
-            hostId = 0;
-#pragma warning restore 618
         }
 
         ~NetworkConnection()
@@ -161,39 +129,6 @@ namespace Mirror
         internal void SetHandlers(Dictionary<int, NetworkMessageDelegate> handlers)
         {
             messageHandlers = handlers;
-        }
-
-        /// <summary>
-        /// Obsolete: Use NetworkClient/NetworkServer.RegisterHandler{T} instead
-        /// </summary>
-        [EditorBrowsable(EditorBrowsableState.Never), Obsolete("Use NetworkClient/NetworkServer.RegisterHandler<T> instead")]
-        public void RegisterHandler(short msgType, NetworkMessageDelegate handler)
-        {
-            if (messageHandlers.ContainsKey(msgType))
-            {
-                if (LogFilter.Debug) Debug.Log("NetworkConnection.RegisterHandler replacing " + msgType);
-            }
-            messageHandlers[msgType] = handler;
-        }
-
-        /// <summary>
-        /// Obsolete: Use <see cref="NetworkClient.UnregisterHandler{T}"/> and <see cref="NetworkServer.UnregisterHandler{T}"/> instead
-        /// </summary>
-        [EditorBrowsable(EditorBrowsableState.Never), Obsolete("Use NetworkClient/NetworkServer.UnregisterHandler<T> instead")]
-        public void UnregisterHandler(short msgType)
-        {
-            messageHandlers.Remove(msgType);
-        }
-
-        /// <summary>
-        /// Obsolete: use <see cref="Send{T}(T, int)"/> instead
-        /// </summary>
-        [EditorBrowsable(EditorBrowsableState.Never), Obsolete("use Send<T> instead")]
-        public bool Send(int msgType, MessageBase msg, int channelId = Channels.DefaultReliable)
-        {
-            // pack message and send
-            byte[] message = MessagePacker.PackMessage(msgType, msg);
-            return Send(new ArraySegment<byte>(message), channelId);
         }
 
         /// <summary>
@@ -277,15 +212,6 @@ namespace Mirror
             visList.Clear();
         }
 
-        /// <summary>
-        /// Obsolete: Use <see cref="InvokeHandler(int, NetworkReader, int)"/> instead
-        /// </summary>
-        [EditorBrowsable(EditorBrowsableState.Never), Obsolete("Use InvokeHandler<T> instead")]
-        public bool InvokeHandlerNoData(int msgType)
-        {
-            return InvokeHandler(msgType, null, -1);
-        }
-
         internal bool InvokeHandler(int msgType, NetworkReader reader, int channelId)
         {
             if (messageHandlers.TryGetValue(msgType, out NetworkMessageDelegate msgDelegate))
@@ -366,28 +292,12 @@ namespace Mirror
 
         internal void AddOwnedObject(NetworkIdentity obj)
         {
-            clientOwnedObjects.Add(obj);
+            clientOwnedObjects.Add(obj.netId);
         }
 
         internal void RemoveOwnedObject(NetworkIdentity obj)
         {
-            clientOwnedObjects.Remove(obj);
-        }
-
-        internal void DestroyOwnedObjects()
-        {
-            // create a copy because the list might be modified when destroying
-            HashSet<NetworkIdentity> tmp = new HashSet<NetworkIdentity>(clientOwnedObjects);
-            foreach (NetworkIdentity netIdentity in tmp)
-            {
-                if (netIdentity != null)
-                {
-                    NetworkServer.Destroy(netIdentity.gameObject);
-                }
-            }
-
-            // clear the hashset because we destroyed them all
-            clientOwnedObjects.Clear();
+            clientOwnedObjects.Remove(obj.netId);
         }
     }
 }
