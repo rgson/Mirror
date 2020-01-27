@@ -1,7 +1,7 @@
 {
 	"name": "se.rgson.vis2k-mirror",
 	"displayName": "Mirror",
-	"version": "6.4.1",
+	"version": "6.5.0",
 	"unity": "2019.1",
 	"description": "Mirror is a high level Networking API for Unity, supporting different low level Transports.",
 	"author": "vis2k",
@@ -20,6 +20,12 @@
 			"displayName": "Basic",
 			"description": "Basic",
 			"path": "Examples/Basic"
+		}
+		,
+		{
+			"displayName": "Chat",
+			"description": "Chat",
+			"path": "Examples/Chat"
 		}
 		,
 		{
