@@ -18,8 +18,8 @@ git checkout upm || git checkout --orphan upm
 
 # Import the new version
 rm -rf *
-git archive "$version" Assets/Mirror |
-	tar --strip-components=2 -x --exclude Tests
+git archive "$version" Assets/Mirror | tar --strip-components=2 -x \
+	--exclude Tests --exclude Tests.meta
 git archive "$version" LICENSE | tar -x
 
 # Generate package.json
